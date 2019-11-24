@@ -8,57 +8,54 @@ p <= 30000, n <= 300000.
 
 #include <iostream>
 #include <vector>
+#include <iterator>
 
 
 // Compute Prefix Function
 // O(p) mem
-std::vector<int> CMP (std::string& p) {
-    int m = p.length();
-    std::vector<int> pi(m, 0);
+std::vector<size_t> CMP (std::string& pattern) {
+    std::vector<size_t> pi(pattern.size(), 0);
     pi[0] = 0;
-    int k = 0;
+    size_t tmp_pi = 0;
 
-    for (int q = 1; q < m; ++q) {
-        while (k > 0 && pi[k] != pi[q]) {
-            k = pi[k - 1];
+    for (size_t i = 1; i < pattern.length(); ++i) {
+        while (tmp_pi > 0 && pattern[tmp_pi] != pattern[i]) {
+            tmp_pi = pi[tmp_pi - 1];
         }
-        if (p[k] == p[q]) {
-            ++k;
+        if (pattern[tmp_pi] == pattern[i]) {
+            ++tmp_pi;
         }
-        pi[q] = k;
+        pi[i] = tmp_pi;
     }
 
     return pi;
 }
 
 // Knuth - Morris - Pratt algorithm
-void KMP_Matcher (std::string &t, std::string& p) {
-    int n = t.length();
-    int m = p.length();
-    std::vector<int> pi = CMP(p);
+void KMP_Matcher (std::string& pattern) {
+    std::vector<size_t> pi = CMP(pattern);
+    size_t tmp_pi = 0;
+    std::istream_iterator<char> read_it (std::cin);
 
-    int q = 0;
-
-    for (int i = 0; i < n; ++i) {
-        while (q > 0 && p[q] != t[i]) {
-            q = pi[q - 1];
+    for (size_t iter = 0; read_it != std::istream_iterator<char>(); ++read_it, ++iter) {
+        while (tmp_pi > 0 && pattern[tmp_pi] != *read_it) {
+            tmp_pi = pi[tmp_pi - 1];
         }
-        if (p[q] == t[i]){
-            ++q;
+        if (pattern[tmp_pi] == *read_it){
+            ++tmp_pi;
         }
-        if (q == m) {
-            std:: cout << i - m + 1 <<" ";
-            q = pi[q - 1];
+        if (tmp_pi == pattern.size()) {
+            std::cout << iter + 1 - pattern.size() << " ";
+            tmp_pi = pi[tmp_pi - 1];
         }
     }
 }
 
 int main() {
-    std::string s, p;
+    std::string p;
     std::cin >> p;
-    std::cin >> s;
 
-    KMP_Matcher(s, p);
+    KMP_Matcher(p);
 
     return 0;
 }
