@@ -7,33 +7,32 @@
 #include <vector>
 
 
-const int alphabet = 26;
-const char zero_chr = 'a';
+constexpr size_t ALPHABET = 26;
+constexpr char ZERO_CHR = 'a';
 
 
-char new_character(std::string& s, const std::vector<int>& pi, int index) {
-    std::vector<bool> available_symbols(alphabet, true);
+char newCharacter(std::string& s, const std::vector<size_t >& pi, size_t index) {
+    std::vector<bool> available_symbols(ALPHABET, true);
 
     while (index > 0) {
         index = pi[index - 1];
-        available_symbols[s[index] - zero_chr] = false;
+        available_symbols[s[index] - ZERO_CHR] = false;
     }
 
-    for (int i = 0; i < alphabet; ++i) {
+    for (size_t i = 0; i < ALPHABET; ++i) {
         if (available_symbols[i]) {
-            return zero_chr + i;
+            return ZERO_CHR + i;
         }
     }
-
 }
 
-std::string buildFromPrefix(const std::vector<int>& pi) {
+std::string buildFromPrefix(const std::vector<size_t>& pi) {
     std::string s;
 
-    for(int i = 0; i<pi.size(); i++){
-        if (pi[i] == 0){
-            s += new_character(s, pi, i);
-        }else{
+    for (size_t i = 0; i < pi.size(); i++) {
+        if (pi[i] == 0) {
+            s += newCharacter(s, pi, i);
+        } else {
             s += s[pi[i] - 1];
         }
     }
@@ -42,8 +41,8 @@ std::string buildFromPrefix(const std::vector<int>& pi) {
 }
 
 int main() {
-    std::vector<int> pi;
-    int tmp;
+    std::vector<size_t> pi;
+    size_t tmp;
 
     while(std::cin >> tmp){
         pi.push_back(tmp);
