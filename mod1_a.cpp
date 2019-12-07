@@ -11,39 +11,39 @@ p <= 30000, n <= 300000.
 #include <iterator>
 
 
+int calc_next_pref (std::vector<size_t>& pi, int pref_prev, std::string& pattern, char next_symbol) {
+    while (pref_prev > 0 && pattern[pref_prev] != next_symbol) {
+        pref_prev = pi[pref_prev - 1];
+    }
+    if (pattern[pref_prev] == next_symbol) {
+        ++pref_prev;
+    }
+
+    return pref_prev;
+}
+
 // Compute Prefix Function
 // O(p) mem
-std::vector<size_t> CMP (std::string& pattern) {
+std::vector<size_t> cmp (std::string& pattern) {
     std::vector<size_t> pi(pattern.size(), 0);
     pi[0] = 0;
-    size_t tmp_pi = 0;
 
     for (size_t i = 1; i < pattern.length(); ++i) {
-        while (tmp_pi > 0 && pattern[tmp_pi] != pattern[i]) {
-            tmp_pi = pi[tmp_pi - 1];
-        }
-        if (pattern[tmp_pi] == pattern[i]) {
-            ++tmp_pi;
-        }
-        pi[i] = tmp_pi;
+        pi[i] = calc_next_pref(pi, pi[i - 1], pattern, pattern[i]);
     }
 
     return pi;
 }
 
 // Knuth - Morris - Pratt algorithm
-void KMP_Matcher (std::string& pattern) {
-    std::vector<size_t> pi = CMP(pattern);
+void kmp_matcher (std::string& pattern) {
+    std::vector<size_t> pi = cmp(pattern);
     size_t tmp_pi = 0;
     std::istream_iterator<char> read_it (std::cin);
+    std::istream_iterator<char> eos;
 
-    for (size_t iter = 0; read_it != std::istream_iterator<char>(); ++read_it, ++iter) {
-        while (tmp_pi > 0 && pattern[tmp_pi] != *read_it) {
-            tmp_pi = pi[tmp_pi - 1];
-        }
-        if (pattern[tmp_pi] == *read_it){
-            ++tmp_pi;
-        }
+    for (size_t iter = 0; read_it != std::istream_iterator<char>() && read_it != eos; ++read_it, ++iter) {
+        tmp_pi = calc_next_pref(pi, tmp_pi, pattern, *read_it);
         if (tmp_pi == pattern.size()) {
             std::cout << iter + 1 - pattern.size() << " ";
             tmp_pi = pi[tmp_pi - 1];
@@ -55,7 +55,7 @@ int main() {
     std::string p;
     std::cin >> p;
 
-    KMP_Matcher(p);
+    kmp_matcher(p);
 
     return 0;
 }
